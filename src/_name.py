@@ -4,6 +4,8 @@ import qtify_maya_window as qtfy
 from uiContainer import uic
 import pymel.core as pc
 import os.path as osp
+import appUsageApp
+reload(appUsageApp)
 
 root_path = osp.dirname(osp.dirname(__file__))
 ui_path = osp.join(root_path, 'ui')
@@ -35,6 +37,8 @@ class Name(Form, Base):
         
         self.okButton.clicked.connect(self.name)
         self.nameBox.returnPressed.connect(self.name)
+        
+        appUsageApp.updateDatabase('nameMtl')
         
     def closeEvent(self, event):
         self.deleteLater()
