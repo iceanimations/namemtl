@@ -18,7 +18,7 @@ class Name(Form, Base):
         
         self.renameButton.clicked.connect(self.name)
         self.prefixBox.returnPressed.connect(self.name)
-        self.sgtomtlButton.clicked.connect(sgtomtl)
+        self.sgtomtlButton.clicked.connect(self.sgtomtl)
         
         appUsageApp.updateDatabase('nameMtl')
         
