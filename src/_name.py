@@ -37,18 +37,19 @@ class Name(Form, Base):
         if not meshes:
             pc.warning('No selection found for meshes')
             return
+        sgs = set()
         for mesh in meshes:
-            sgs = mesh.outputs(type='shadingEngine')
-            for sg in sgs: 
-                try:
-                    mtl = sg.surfaceShader.inputs()[0]
-                    name = sg.name()
-                    pc.rename(sg, self.getUniqueName(name))
-                    pc.rename(mtl, name)
-                except IndexError:
-                    pc.warning('No mtl found for %s'%sg.name())
-                except Exception as ex:
-                    pc.warning(str(ex))
+            sgs = sgs.union(set(mesh.outputs(type='shadingEngine')))
+        for sg in sgs: 
+            try:
+                mtl = sg.surfaceShader.inputs()[0]
+                name = sg.name()
+                pc.rename(sg, self.getUniqueName(name))
+                pc.rename(mtl, name)
+            except IndexError:
+                pc.warning('No mtl found for %s'%sg.name())
+            except Exception as ex:
+                pc.warning(str(ex))
                 
         
     def name(self):
@@ -60,14 +61,15 @@ class Name(Form, Base):
         if not meshes:
             pc.warning('No selection found for meshes')
             return
+        sgs = set()
         for mesh in meshes:
-            sgs = mesh.outputs(type='shadingEngine')
-            for sg in sgs:
-                try:
-                    mtl = sg.surfaceShader.inputs()[0]
-                    name = mtl.name()
-                    pc.rename(sg, self.getUniqueName(prefix +'_'+ name))
-                except IndexError:
-                    pc.warning('No mtl found on %s'%sg.name())
-                except Exception as ex:
-                    pc.warning(str(ex))
+            sgs = sgs.union(set(mesh.outputs(type='shadingEngine')))
+        for sg in sgs:
+            try:
+                mtl = sg.surfaceShader.inputs()[0]
+                name = mtl.name()
+                pc.rename(sg, self.getUniqueName(prefix +'_'+ name))
+            except IndexError:
+                pc.warning('No mtl found on %s'%sg.name())
+            except Exception as ex:
+                pc.warning(str(ex))
