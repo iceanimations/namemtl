@@ -26,8 +26,10 @@ class Name(Form, Base):
         self.deleteLater()
         
     def getUniqueName(self, name):
+        cnt = 1
         while pc.objExists(name):
-            name += '1'
+            name += str(cnt)
+            cnt += 1
         return name
         
     def sgtomtl(self):
