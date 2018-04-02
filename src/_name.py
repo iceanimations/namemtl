@@ -64,7 +64,7 @@ class Name(Form, Base):
                 try:
                     mtl = sg.surfaceShader.inputs()[0]
                     name = mtl.name()
-                    pc.rename(sg, self.getUniquename(prefix +'_'+ name))
+                    pc.rename(sg, self.getUniqueName(prefix +'_'+ name))
                 except IndexError:
                     pc.warning('No mtl found on %s'%sg.name())
                 except Exception as ex:
