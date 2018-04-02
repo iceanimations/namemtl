@@ -16,63 +16,56 @@ class Name(Form, Base):
         super(Name, self).__init__(parent)
         self.setupUi(self)
         
-        self.mappings = {'aiMatteColor': 'matteColor',
-                         'aiMatteColorA': 'matteOpacity',
-                         'color': 'diffuseColor',
-                         'Kd': 'diffuseWeight',
-                         'Kb': 'diffuseBackLighting',
-                         'KsColor': 'specularColor',
-                         'Ks': 'specularWeight',
-                         'Ksn': 'specularReflectanceAtNormal',
-                         'KrColor': 'reflectionColor',
-                         'Kr': 'reflectionWeight',
-                         'Krn': 'reflectionReflectanceAtNormal',
-                         'KtColor': 'refractionColor',
-                         'Kt': 'refractionWeight',
-                         'normalCamera': 'bumpMapping',
-                         'KsssColor': 'subSurfaceScatteringColor',
-                         'Ksss': 'subSurfaceScatteringWeight',
-                         'sssRadius': 'subSurfaceScatteringRadius',
-                         'emision': 'emissionScale'}
-        
-        self.okButton.clicked.connect(self.name)
-        self.nameBox.returnPressed.connect(self.name)
+        self.renameButton.clicked.connect(self.name)
+        self.prefixBox.returnPressed.connect(self.name)
+        self.sgtomtlButton.clicked.connect(sgtomtl)
         
         appUsageApp.updateDatabase('nameMtl')
         
     def closeEvent(self, event):
         self.deleteLater()
         
+    def getUniqueName(self, name):
+        while pc.objExists(name):
+            name += '1'
+        return name
+        
+    def sgtomtl(self):
+        meshes = pc.ls(sl=True, dag=True, type='mesh')
+        if not meshes:
+            pc.warning('No selection found for meshes')
+            return
+        for mesh in meshes:
+            sgs = mesh.outputs(type='shadingEngine')
+            for sg in sgs: 
+                try:
+                    mtl = sg.surfaceShader.inputs()[0]
+                    name = sg.name()
+                    rename(sg, self.getUniqueName(name))
+                    pc.rename(mtl, name)
+                except IndexError:
+                    pc.warning('No mtl found for %s'%sg.name())
+                except Exception as ex:
+                    pc.warning(str(ex))
+                
+        
     def name(self):
-        name = str(self.nameBox.text())
-        if not name:
-            pc.warning('Name not specified...')
+        prefix = str(self.prefixBox.text())
+        if not prefix:
+            pc.warning('Prefix not specified...')
             return
-        try:
-            mtl = pc.ls(sl=True)[0]
-        except IndexError:
-            pc.warning('No selection found')
+        meshes = pc.ls(sl=True, type='mesh', dag=True)
+        if not meshes:
+            pc.warning('No selection found for meshes')
             return
-        if pc.objExists(name):
-            pc.warning('An object named "%s" of type "%s" already exists in the scene'%(name, pc.PyNode(name).nodeType()))
-            return
-        try:
-            pc.rename(mtl, name+'_mtl')
-        except Exception as ex:
-            pc.warning(str(ex)+' ('+node.name()+')')
-            return
-        for node in pc.listConnections(mtl):
-            if type(node) == pc.nt.ShadingEngine:
-                pc.rename(node, name+'SG')
-                continue
-            dest = node.outputs(plugs=True) + node.inputs(plugs=True)
-            for ds in dest:
-                if ds.node().name() == mtl.name():
-                    ds = ds.name().split('.')[-1]
-                    niceName = self.mappings.get(ds)
-                    ds = niceName if niceName else ds
-                    try:
-                        pc.rename(node, name+'_'+ds)
-                    except Exception as ex:
-                        pc.warning(str(ex)+' ('+node.name()+')')
-                    break
+        for mesh in meshes:
+            sgs = mesh.outputs(type='shadingEngine')
+            for sg in sgs:
+                try:
+                    mtl = sg.surfaceShader.inputs()[0]
+                    name = mtl.name()
+                    pc.rename(sg, self.getUniquename(prefix +'_'+ name))
+                except IndexError:
+                    pc.warning('No mtl found on %s'%sg.name())
+                except Exception as ex:
+                    pc.warning(str(ex))

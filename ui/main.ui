@@ -7,27 +7,48 @@
     <x>0</x>
     <y>0</y>
     <width>333</width>
-    <height>46</height>
+    <height>72</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Name Mtl</string>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QHBoxLayout" name="horizontalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout">
     <item>
-     <widget class="QLineEdit" name="nameBox"/>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLineEdit" name="prefixBox">
+        <property name="toolTip">
+         <string>Prefix to add to SG name</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="renameButton">
+        <property name="minimumSize">
+         <size>
+          <width>75</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Rename Mtls for selected mesh</string>
+        </property>
+        <property name="text">
+         <string>Rename Mtl</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
     </item>
     <item>
-     <widget class="QPushButton" name="okButton">
-      <property name="minimumSize">
-       <size>
-        <width>75</width>
-        <height>0</height>
-       </size>
+     <widget class="QPushButton" name="sgtomtlButton">
+      <property name="toolTip">
+       <string>Rename Mtl to SG name</string>
       </property>
       <property name="text">
-       <string>OK</string>
+       <string>Reanme SG to Mtl</string>
       </property>
      </widget>
     </item>
